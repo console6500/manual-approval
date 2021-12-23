@@ -15,18 +15,24 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo Building the application
+  
   development:
-    runs-on: ubuntu-latest
     environment: development
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run a one-line script
-        run: echo Hello, world!
-  production:
+    needs: [build]
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - uses: actions/checkout@v2
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - run: echo Deploying to the development environment
+
+  production:
+    environment: production
+    needs: [build, development]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo Deploying to the production environment
